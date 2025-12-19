@@ -1,0 +1,124 @@
+# Dependencies
+node_modules/
+.pnp/
+.pnp.js
+
+# Testing
+coverage/
+
+# Production builds
+/frontend/dist
+/frontend/build
+/backend/dist
+/backend/build
+
+# Environment variables
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+lerna-debug.log*
+*.log
+logs/
+backend/logs/
+frontend/logs/
+
+# Editor directories and files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Prisma
+backend/prisma/migrations/*_migration/
+!backend/prisma/migrations/.gitkeep
+
+# TypeScript
+*.tsbuildinfo
+
+# Database
+*.db
+*.sqlite
+
+# Temporary files
+.tmp/
+tmp/
+temp/
+
+# OS
+Thumbs.db
+
+# Package manager lock files (keep package-lock.json but ignore others if switching package managers)
+# Uncomment the following if you want to ignore lock files
+# package-lock.json
+# yarn.lock
+# pnpm-lock.yaml
+
+# Build tools and frameworks
+.next/
+.nuxt/
+.cache/
+.parcel-cache/
+.turbo/
+.vercel/
+.output/
+
+# IDE and editor specific
+*.sublime-project
+*.sublime-workspace
+.project
+.classpath
+.c9/
+*.launch
+.settings/
+*.iml
+
+# Testing and coverage
+.nyc_output/
+.jest-cache/
+
+# Caching
+.eslintcache
+.stylelintcache
+.npm
+.yarn/cache
+.yarn/unplugged
+.yarn/build-state.yml
+.yarn/install-state.gz
+
+# Process files
+*.pid
+*.pid.lock
+*.seed
+
+# Docker volumes and data
+docker-data/
+postgres-data/
+mysql-data/
+
+# Backup files
+*.bak
+*.backup
+*.old
+
+# Mac specific
+.AppleDouble
+.LSOverride
+._*
+
+# Windows specific
+*.lnk
+ehthumbs.db
+ehthumbs_vista.db
+
+# Linux specific
+.directory
+.Trash-*
