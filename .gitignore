@@ -122,3 +122,43 @@ ehthumbs_vista.db
 # Linux specific
 .directory
 .Trash-*
+
+# Claude Code
+.claude/
+
+# Uploads and user content
+uploads/
+backend/uploads/
+frontend/uploads/
+public/uploads/
+static/uploads/
+
+# Generated files
+*.pdf
+*.xlsx
+*.docx
+generated/
+
+# Email templates (compiled)
+*.mjml.html
+email-templates-cache/
+
+# Prisma generated client (usually tracked, but can be regenerated)
+# backend/node_modules/.prisma
+# backend/node_modules/@prisma
+
+# SSL certificates
+*.pem
+*.crt
+*.key
+*.cert
+
+# Sentry
+.sentryclirc
+
+# Storybook
+storybook-static/
+
+# Database dumps
+*.sql
+*.dump

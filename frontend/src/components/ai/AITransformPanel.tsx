@@ -4,6 +4,7 @@ import { useAITransformStreaming } from '../../hooks/useAITransform';
 import { Modal } from '../common/Modal';
 import { Button } from '../common/Button';
 import { exportService } from '../../services/exportService';
+import { SendEmailModal } from '../email/SendEmailModal';
 
 interface AITransformPanelProps {
   noteId: string;
@@ -19,6 +20,7 @@ export const AITransformPanel: React.FC<AITransformPanelProps> = ({
   onClose,
 }) => {
   const [selectedTemplateId, setSelectedTemplateId] = useState('');
+  const [showEmailModal, setShowEmailModal] = useState(false);
   const { streamedContent, isStreaming, error, documentId, startStreaming, reset } =
     useAITransformStreaming();
 
@@ -40,6 +42,10 @@ export const AITransformPanel: React.FC<AITransformPanelProps> = ({
       exportService.downloadDocument(documentId, format);
     }
   };
+
+  // Debug logging
+  console.log('AITransformPanel - documentId:', documentId);
+  console.log('AITransformPanel - streamedContent exists:', !!streamedContent);
 
   return (
     <Modal isOpen={true} onClose={onClose} title="Transform Note with AI">
@@ -139,11 +145,35 @@ export const AITransformPanel: React.FC<AITransformPanelProps> = ({
                     HTML
                   </Button>
                 </div>
+
+                <div className="mt-4 pt-4 border-t border-dark-100">
+                  <p className="text-sm font-semibold text-dark-700 mb-3">Share Document</p>
+                  <Button
+                    onClick={() => setShowEmailModal(true)}
+                    size="sm"
+                    variant="primary"
+                    className="w-full"
+                  >
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 inline mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                    </svg>
+                    Send via Email
+                  </Button>
+                </div>
               </div>
             )}
           </div>
         )}
       </div>
+
+      {showEmailModal && documentId && (
+        <SendEmailModal
+          isOpen={showEmailModal}
+          onClose={() => setShowEmailModal(false)}
+          documentId={documentId}
+          documentTitle="Transformed Document"
+        />
+      )}
     </Modal>
   );
 };

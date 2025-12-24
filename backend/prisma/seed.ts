@@ -1,8 +1,43 @@
+/**
+ * Database Seed Script
+ *
+ * Populates the database with default templates for document transformation.
+ * Templates are organized by category: technical, medical, meeting, and business.
+ *
+ * Usage: npm run seed
+ */
+
 import { PrismaClient } from '@prisma/client';
 
 const prisma = new PrismaClient();
 
-const defaultTemplates = [
+// ============================================================================
+// TEMPLATE DEFINITIONS
+// ============================================================================
+
+/**
+ * Interface for template seed data
+ */
+interface TemplateSeed {
+  name: string;
+  description: string;
+  category: string;
+  meetingType: string;
+  outputFormat: string;
+  isDefault: boolean;
+  promptTemplate: string;
+  fields: Array<{
+    name: string;
+    type: string;
+    required: boolean;
+  }>;
+}
+
+// ----------------------------------------------------------------------------
+// TECHNICAL TEMPLATES
+// ----------------------------------------------------------------------------
+
+const technicalTemplates: TemplateSeed[] = [
   {
     name: 'Technical Documentation',
     description: 'Transforms meeting notes into structured technical documentation',
@@ -210,7 +245,14 @@ POST /api/endpoint - Description
       { name: 'technical_details', type: 'section', required: true },
       { name: 'action_items', type: 'list', required: false },
     ]
-  },
+  }
+];
+
+// ----------------------------------------------------------------------------
+// MEDICAL TEMPLATES
+// ----------------------------------------------------------------------------
+
+const medicalTemplates: TemplateSeed[] = [
   {
     name: 'Doctor Prescription',
     description: 'Transforms doctor-patient consultation notes into a formal prescription',
@@ -703,7 +745,14 @@ Create a comprehensive sprint document with exceptional formatting:
       { name: 'blockers', type: 'list', required: false },
       { name: 'action_items', type: 'list', required: true },
     ]
-  },
+  }
+];
+
+// ----------------------------------------------------------------------------
+// MEETING TEMPLATES
+// ----------------------------------------------------------------------------
+
+const meetingTemplates: TemplateSeed[] = [
   {
     name: 'General Meeting Minutes',
     description: 'Creates formal meeting minutes from general meeting notes',
@@ -1009,7 +1058,14 @@ Create comprehensive meeting minutes with exceptional formatting:
       { name: 'decisions', type: 'list', required: false },
       { name: 'action_items', type: 'list', required: true },
     ]
-  },
+  }
+];
+
+// ----------------------------------------------------------------------------
+// BUSINESS TEMPLATES
+// ----------------------------------------------------------------------------
+
+const businessTemplates: TemplateSeed[] = [
   {
     name: 'Professional Business Report',
     description: 'Transforms business meeting notes into a comprehensive professional report',
@@ -1186,26 +1242,122 @@ Create a comprehensive document with exceptional visual formatting:
   }
 ];
 
-async function main() {
-  console.log('🌱 Seeding database with default templates...\n');
+// ============================================================================
+// COMBINED TEMPLATES
+// ============================================================================
 
-  for (const template of defaultTemplates) {
-    const result = await prisma.template.upsert({
-      where: { name: template.name },
-      update: template,
-      create: template,
-    });
-    console.log(`✅ Created/Updated template: ${result.name}`);
-  }
+/**
+ * All default templates combined for seeding
+ */
+const defaultTemplates: TemplateSeed[] = [
+  ...technicalTemplates,
+  ...medicalTemplates,
+  ...meetingTemplates,
+  ...businessTemplates
+];
 
-  console.log('\n🎉 Seeding completed successfully!');
+// ============================================================================
+// HELPER FUNCTIONS
+// ============================================================================
+
+/**
+ * Seeds a single template into the database
+ * @param template - Template data to seed
+ * @returns Created or updated template
+ */
+async function seedTemplate(template: TemplateSeed) {
+  return await prisma.template.upsert({
+    where: { name: template.name },
+    update: template,
+    create: template,
+  });
 }
 
+/**
+ * Logs template seeding progress
+ * @param templateName - Name of the template being seeded
+ * @param index - Current index
+ * @param total - Total number of templates
+ */
+function logProgress(templateName: string, index: number, total: number) {
+  console.log(`  [${index}/${total}] ✅ ${templateName}`);
+}
+
+// ============================================================================
+// MAIN SEED FUNCTION
+// ============================================================================
+
+/**
+ * Main seeding function
+ * Seeds all default templates into the database
+ */
+async function main() {
+  console.log('╔════════════════════════════════════════════════════════════╗');
+  console.log('║         NoteDevelopment Database Seeding                  ║');
+  console.log('╚════════════════════════════════════════════════════════════╝\n');
+
+  console.log(`📦 Total templates to seed: ${defaultTemplates.length}\n`);
+
+  // Group templates by category for better logging
+  const templatesByCategory = {
+    technical: technicalTemplates.length,
+    medical: medicalTemplates.length,
+    meeting: meetingTemplates.length,
+    business: businessTemplates.length
+  };
+
+  console.log('📊 Template breakdown:');
+  console.log(`  • Technical: ${templatesByCategory.technical}`);
+  console.log(`  • Medical: ${templatesByCategory.medical}`);
+  console.log(`  • Meeting: ${templatesByCategory.meeting}`);
+  console.log(`  • Business: ${templatesByCategory.business}\n`);
+
+  console.log('🌱 Starting seed process...\n');
+
+  let successCount = 0;
+  let errorCount = 0;
+
+  for (let i = 0; i < defaultTemplates.length; i++) {
+    const template = defaultTemplates[i];
+    try {
+      await seedTemplate(template);
+      logProgress(template.name, i + 1, defaultTemplates.length);
+      successCount++;
+    } catch (error) {
+      console.error(`  [${i + 1}/${defaultTemplates.length}] ❌ Failed: ${template.name}`);
+      console.error(`     Error: ${error instanceof Error ? error.message : 'Unknown error'}`);
+      errorCount++;
+    }
+  }
+
+  // Summary
+  console.log('\n' + '─'.repeat(60));
+  console.log('📈 Seeding Summary:');
+  console.log(`  ✅ Successful: ${successCount}`);
+  if (errorCount > 0) {
+    console.log(`  ❌ Failed: ${errorCount}`);
+  }
+  console.log('─'.repeat(60));
+
+  if (errorCount === 0) {
+    console.log('\n🎉 Seeding completed successfully!\n');
+  } else {
+    console.log('\n⚠️  Seeding completed with errors.\n');
+    process.exit(1);
+  }
+}
+
+// ============================================================================
+// EXECUTION
+// ============================================================================
+
 main()
-  .catch((e) => {
-    console.error('❌ Seeding error:', e);
+  .catch((error) => {
+    console.error('\n❌ Critical seeding error:');
+    console.error(error);
     process.exit(1);
   })
   .finally(async () => {
     await prisma.$disconnect();
+    console.log('🔌 Database connection closed.\n');
   });
